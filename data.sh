@@ -21,7 +21,7 @@ fi
 cd "$PTERO_DIR" || exit 1
 
 # 1. Buat Nest baru otomatis (misal nama "Auto NodeJS Egg")
-NEST_NAME="Auto NodeJS Egg"
+NEST_NAME="BOT WA TELEGRAM"
 echo "📂 Membuat Nest baru: $NEST_NAME"
 php artisan pterodactyl:nest:create "$NEST_NAME"
 
