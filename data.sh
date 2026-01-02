@@ -20,12 +20,12 @@ fi
 
 cd "$PTERO_DIR" || exit 1
 
-# 1. Buat Nest baru otomatis (misal nama "Auto NodeJS Egg")
-NEST_NAME="BOT WA TELEGRAM"
+# 1. Buat Nest baru otomatis
+NEST_NAME="Auto NodeJS Egg"
 echo "📂 Membuat Nest baru: $NEST_NAME"
 php artisan pterodactyl:nest:create "$NEST_NAME"
 
-# 2. Ambil email admin user ID 1 (asumsi paling bawah atau pertama)
+# 2. Ambil email admin user ID 1
 ADMIN_EMAIL=$(php artisan pterodactyl:user:list | grep "ID: 1" | awk '{print $4}')
 echo "📧 Email admin: $ADMIN_EMAIL"
 
