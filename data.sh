@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PTERO_DIR="/var/www/pterodactyl"
-EGG_URL="https://raw.githubusercontent.com/khususprotectsyah/eggbotwa/main/egg-botwa.json"
+EGG_URL="https://raw.githubusercontent.com/akbarxyanto/eggbotwa/main/egg-botwa.json"
 EGG_FILE="egg-botwa.json"
 
 echo "🚀 INSTALL EGG NODEJS 100% AUTO"
