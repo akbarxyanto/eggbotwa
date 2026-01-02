@@ -1,59 +1,56 @@
 #!/bin/bash
 
+# Direktori instalasi Pterodactyl
 PTERO_DIR="/var/www/pterodactyl"
+# URL Egg JSON
 EGG_URL="https://raw.githubusercontent.com/akbarxyanto/eggbotwa/main/egg-botwa.json"
 EGG_FILE="egg-botwa.json"
 
-echo "🚀 INSTALL EGG NODEJS 100% AUTO"
-
-# 1. HARUS ROOT
+# Pastikan root
 if [ "$EUID" -ne 0 ]; then
   echo "❌ HARUS ROOT!"
   exit 1
 fi
 
-# 2. CEK PTERODACTYL ADA
+# Cek Pterodactyl ada
 if [ ! -d "$PTERO_DIR" ]; then
-  echo "❌ Pterodactyl tidak ada di $PTERO_DIR"
+  echo "❌ Pterodactyl tidak ditemukan!"
   exit 1
 fi
 
 cd "$PTERO_DIR" || exit 1
 
-# 3. CEK ARTISAN & COMPOSER
-if [ ! -f "artisan" ]; then
-  echo "❌ artisan tidak ditemukan!"
-  exit 1
-fi
+# 1. Buat Nest baru otomatis (misal nama "Auto NodeJS Egg")
+NEST_NAME="Auto NodeJS Egg"
+echo "📂 Membuat Nest baru: $NEST_NAME"
+php artisan pterodactyl:nest:create "$NEST_NAME"
 
-# 4. DOWNLOAD EGG + VALIDASI
-echo "⬇️ Download egg..."
-if ! curl -fsSL "$EGG_URL" -o "$EGG_FILE"; then
-  echo "❌ Download gagal!"
-  exit 1
-fi
+# 2. Ambil email admin user ID 1 (asumsi paling bawah atau pertama)
+ADMIN_EMAIL=$(php artisan pterodactyl:user:list | grep "ID: 1" | awk '{print $4}')
+echo "📧 Email admin: $ADMIN_EMAIL"
 
-if [ ! -s "$EGG_FILE" ]; then
-  echo "❌ Egg file kosong!"
-  rm -f "$EGG_FILE"
-  exit 1
-fi
+# 3. Download Egg dari raw
+echo "⬇️ Download Egg dari raw..."
+curl -fsSL "$EGG_URL" -o "$EGG_FILE"
 
-# 5. CEK JSON VALID
+# 4. Validasi JSON
 if ! jq empty "$EGG_FILE" 2>/dev/null; then
   echo "❌ Egg JSON rusak!"
   rm -f "$EGG_FILE"
   exit 1
 fi
 
-# 6. IMPORT EGG
-echo "📦 Import egg..."
-php artisan pterodactyl:import-eggs "$EGG_FILE"
+# 5. Import Egg ke Nest otomatis
+echo "📦 Mengimpor Egg ke Nest..."
+php artisan pterodactyl:import-eggs "$EGG_FILE" --nest="$NEST_NAME" --email="$ADMIN_EMAIL"
 
+# 6. Cek hasil import
 if [ $? -eq 0 ]; then
-  echo "✅ EGG NODEJS TERPASANG 100%!"
+  echo "✅ Egg berhasil diinstall!"
+  echo "EGG_NAME: $(jq -r '.name' "$EGG_FILE")"
+  echo "ADMIN_EMAIL: $ADMIN_EMAIL"
   rm -f "$EGG_FILE"
 else
-  echo "❌ Import gagal!"
+  echo "❌ Import Egg gagal!"
   exit 1
 fi
